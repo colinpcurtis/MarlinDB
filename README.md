@@ -2,7 +2,7 @@
 
 MarlinDB provides redis-type functionality at a much smaller scale while still being very easy to use and fast.
 
-It has to main components.
+It has two main components.
 1. A TCP-based server that holds the database and processes client messages.
 2. A simple CLI that allows us to interact with the server.
 
