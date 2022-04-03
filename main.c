@@ -19,6 +19,8 @@ int main() {
         fgets(line, MAX_LENGTH, stdin);
 
         Data data = split_input(line, split_line);
-        execute(hash_table, &data);
+        char* returned = execute(hash_table, &data);
+        printf("%s\n", returned);
+        free(returned);
     }
 }

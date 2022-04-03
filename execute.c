@@ -6,14 +6,13 @@
 #include "execute.h"
 
 /* implement CRUD operations */
-int handle_set(HashTable* hash_table, char* key, char* value) {
+char* handle_set(HashTable* hash_table, char* key, char* value) {
     int idx = hash(key) % HASH_TABLE_LENGTH;
-    printf("idx %d\n", idx);
     const int start_idx = idx;
     while (hash_table->elements[idx] != NULL) {
         idx = (idx + 1) % HASH_TABLE_LENGTH;
         if (idx == start_idx) {
-            return 1;
+            return NULL;
         }
     }
 
@@ -22,59 +21,57 @@ int handle_set(HashTable* hash_table, char* key, char* value) {
     strcpy(to_insert->value, value);
 
     hash_table->elements[idx] = to_insert;
-    return 0;
+    return value;
 }
 
 char* handle_get(HashTable* hash_table, char key[MAX_LENGTH]) {
     int idx = hash(key) % HASH_TABLE_LENGTH;
-    printf("idx %d\n", idx);
+    const int start_idx = idx;
     while(hash_table->elements[idx] != NULL) {
         if (strcmp(key, hash_table->elements[idx]->key) == 0) {
-            printf("retrieved %s\n", hash_table->elements[idx]->value);
             return hash_table->elements[idx]->value;
         }
         idx = (idx + 1) % HASH_TABLE_LENGTH;
+        if (idx == start_idx) {
+            return NULL;
+        }
     }
-    printf("element not found\n");
     return NULL;
 }
 
-int handle_update(HashTable* hash_table, char* key, char* value) {
+char* handle_update(HashTable* hash_table, char* key, char* value) {
     int idx = hash(key) % HASH_TABLE_LENGTH;
-    printf("idx %d\n", idx);
     const int start_idx = idx;
     while(hash_table->elements[idx] != NULL) {
         if (strcmp(key, hash_table->elements[idx]->key) == 0) {
-            strcpy(hash_table->elements[idx]->value, value);
-            printf("updated %s\n", hash_table->elements[idx]->value);
-            return 0;
+            char* to_update = hash_table->elements[idx]->value;
+            strcpy(to_update, value);
+            return to_update;
         }
         idx = (idx + 1) % HASH_TABLE_LENGTH;
         if (idx == start_idx) {
-            return 1;
+            return NULL;
         }
     }
-    return 1;
+    return NULL;
 }
 
-int handle_delete(HashTable* hash_table, char* key) {
+char* handle_delete(HashTable* hash_table, char* key) {
     int idx = hash(key) % HASH_TABLE_LENGTH;
     const int start_idx = idx;
-    printf("idx %d\n", idx);
     while (hash_table->elements[idx] != NULL) {
         if (strcmp(key, hash_table->elements[idx]->key) == 0) {
-
+            char* deleted_element = hash_table->elements[idx]->value;
             free(hash_table->elements[idx]);
             hash_table->elements[idx] = NULL;
-            printf("deleted\n");
-            return 0;
+            return deleted_element;
         }
         idx = (idx + 1) % HASH_TABLE_LENGTH;
         if (idx == start_idx) {
-            return 1;
+            return NULL;
         }
     }
-    return 1;
+    return NULL;
 }
 
 void handle_exit(HashTable* hash_table) {
@@ -83,21 +80,24 @@ void handle_exit(HashTable* hash_table) {
     exit(0);
 }
 
-void execute(HashTable* hash_table, Data* data) {
-    int error_code;
+char* execute(HashTable* hash_table, Data* data) {
+    char* operation = NULL;
     if (strcmp(data->operation, "exit") == 0) {
         handle_exit(hash_table);
     }
     if (strcmp(data->operation, "SET") == 0) {
-        error_code = handle_set(hash_table, data->key, data->value);
+        operation = handle_set(hash_table, data->key, data->value);
     }
     else if (strcmp(data->operation, "GET") == 0) {
-        handle_get(hash_table, data->key);
+        operation = handle_get(hash_table, data->key);
     }
     else if (strcmp(data->operation, "UPDATE") == 0) {
-        handle_update(hash_table, data->key, data->value);
+        operation = handle_update(hash_table, data->key, data->value);
     }
     else if (strcmp(data->operation, "DELETE") == 0) {
-        handle_delete(hash_table, data->key);
+        operation = handle_delete(hash_table, data->key);
     }
+    char* buf = malloc(sizeof(char) * MAX_LENGTH);
+    snprintf(buf, sizeof(char) * MAX_LENGTH, "%s %s %s", data->operation, data->key, operation);
+    return buf;
 }
