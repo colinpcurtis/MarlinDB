@@ -17,6 +17,7 @@ char* handle_set(HashTable* hash_table, char* key, char* value) {
     }
 
     NodeData* to_insert = malloc(sizeof(NodeData));
+    printf("created element at %p\n", to_insert);
     strcpy(to_insert->key, key);
     strcpy(to_insert->value, value);
 
@@ -74,17 +75,17 @@ char* handle_delete(HashTable* hash_table, char* key) {
     return NULL;
 }
 
-void handle_exit(HashTable* hash_table) {
-    hash_table_destroy(hash_table);
-    printf("exited gracefully\n");
-    exit(0);
-}
+// void handle_exit(HashTable* hash_table) {
+//     hash_table_destroy(hash_table);
+//     printf("exited gracefully\n");
+//     exit(0);
+// }
 
 char* execute(HashTable* hash_table, Data* data) {
     char* operation = NULL;
-    if (strcmp(data->operation, "exit") == 0) {
-        handle_exit(hash_table);
-    }
+    // if (strcmp(data->operation, "exit") == 0) {
+    //     handle_exit(hash_table);
+    // }
     if (strcmp(data->operation, "SET") == 0) {
         operation = handle_set(hash_table, data->key, data->value);
     }
