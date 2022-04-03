@@ -29,21 +29,25 @@ The following operations are supported in MarlinDB.
 It should be noted that at the moment only single words can act as the key and value.  We don't yet support value strings passed using " characters.
 
 <b>SET</b>
+
 `SET <key> <value>`
 Creates a key-value pair in the database.
 Returns a string of the form `SET <key> <value>`
 
 <b>GET</b>
+
 `GET <key>`
 Retrieves a value from the database by key.
 Returns a string of the form `GET <key> <value>`
 
 <b>UPDATE</b>
+
 `UPDATE <key> <value>`
 Updates the value for a particular key in the database.
 Returns a string of the form `UPDATE <key> <value>`
 
 <b>DELETE</b>
+
 `DELETE <key>`
 Deletes a key-value pair from the database.
 Returns the deleted pair in the form `DELETE <key> <value>`
