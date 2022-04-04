@@ -12,12 +12,17 @@
 #include "server.h"
 
 char* handle_message(HashTable* hash_table, char* client_message) {
-    char* split_line[MAX_LENGTH];
-    Data data = split_input(client_message, split_line);
+    Data data = split_input(client_message);
     char* returned = execute(hash_table, &data);
     printf("%s\n", returned);
     return returned;
 }
+
+// char* json_response(char* raw_response) {
+//     struct json_object* json_obj = json_object_new_object();
+//     json_object_object_add(json_obj, "status", json_object_new_string("OK"));
+//     json_object_object_add(json_obj, "data", json_object_new_string("hi"));
+// }
 
 int main() {
     int socket_desc, client_sock;

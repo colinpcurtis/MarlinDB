@@ -7,6 +7,7 @@ It has two main components.
 2. A simple CLI that allows us to interact with the server.
 
 ## Building
+MarlinDB depends on the `json-c` library.  Its installation instructions can be found on [this GitHub repo](https://github.com/json-c/json-c)
 To build MarlinDB, run the following commands
 
 ```bash
@@ -26,29 +27,36 @@ Then you can type commands into the prompt and get responses from the server.
 ## Functionality
 The following operations are supported in MarlinDB.
 
-It should be noted that at the moment only single words can act as the key and value.  We don't yet support value strings passed using " characters.
+All data is passed in JSON form with the following schema
+```json
+{
+    "operation": <operation>,
+    "key": <key>,
+    "value": <value>
+}
+```
+
+where `"operation"` is one of the following.
+
+Also, if `"value"` is not needed for an operation, then we can either not pass it at all in the JSON or leave it as the empty string.
 
 <b>SET</b>
 
-`SET <key> <value>`
 Creates a key-value pair in the database.
 Returns a string of the form `SET <key> <value>`
 
 <b>GET</b>
 
-`GET <key>`
 Retrieves a value from the database by key.
 Returns a string of the form `GET <key> <value>`
 
 <b>UPDATE</b>
 
-`UPDATE <key> <value>`
 Updates the value for a particular key in the database.
 Returns a string of the form `UPDATE <key> <value>`
 
 <b>DELETE</b>
 
-`DELETE <key>`
 Deletes a key-value pair from the database.
 Returns the deleted pair in the form `DELETE <key> <value>`
 
@@ -56,8 +64,7 @@ Returns the deleted pair in the form `DELETE <key> <value>`
 ## Design
 The key-value pairs in MarlinDB are stored as structs in a hash table with no chaining.  The size of the hash table is constant, and set at a large prime number.  These were chosen to prioritize a simple implementation with minimal technical overhead. Additionally, the index is chosen for the hash table based on the hash of the key.
 
-On the server side, messages are passed through TCP as a string containing 
-`OPERATION <key> <value (if needed)>`.  This was chosen as opposed to a more complicated protocol like HTTP because it's much simpler to decode a message serialized in this form because all of the data is present with no headers and we don't have to worry about request methods.  All of that information is present in the message we pass to the server, and to parse the message it just has to split the line by spaces before executing the command.
+On the server side, messages are passed through TCP as a JSON string.  This was chosen as opposed to a more complicated protocol like HTTP because it's much simpler to decode a message serialized in this form because we don't have to worry about request types.
 
 This also means it's incredibly simple to make requests to  MarlinDB from other languages since we just have to send a TCP request to the server. The `client.py` demonstrates how to use sockets in other languages to call MarlinDB.
 
@@ -72,7 +79,7 @@ This also means it's incredibly simple to make requests to  MarlinDB from other 
 
 ## In progress
 The following functionality is going to be implemented in MarlinDB soon
-- support " character for multi-word strings
+- return json from server
+- make script to install json-c
 - multithreaded server for higher throughput when making requests to server
 - improve hash function
-

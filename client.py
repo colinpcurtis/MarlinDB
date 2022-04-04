@@ -1,4 +1,5 @@
 import socket
+import json
 
 def main():
     host = '127.0.0.1'
@@ -6,7 +7,15 @@ def main():
     port = 7000 # The same port as used by the server
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.connect((host, port))
-    s.sendall(f'SET hi there'.encode('ascii'))
+
+    data = {
+        "operation": "SET",
+        "key": "hello",
+        "value": "howdy partner"
+    }
+    serialized = json.dumps(data)
+    s.sendall(bytes(serialized, encoding='ascii'))
+
     data = s.recv(message_size)
     s.close()
     print(f"Received: {data.decode('ascii')}")

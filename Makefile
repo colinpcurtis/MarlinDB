@@ -11,10 +11,10 @@ OBJ_SERVER=server.o hash_table.o parser.o execute.o
 	$(CC) $(CFLAGS) -o $@ -c $<
 
 $(DB_EXEC): $(OBJ_DB)
-	$(CC) $(CFLAGS) -o $@ $(OBJ_DB)
+	$(CC) $(CFLAGS) -o $@ $(OBJ_DB) -ljson-c
 
 $(SERVER_EXEC): $(OBJ_SERVER)
-	$(CC) $(CFLAGS) -o $@ $(OBJ_SERVER)
+	$(CC) $(CFLAGS) -o $@ $(OBJ_SERVER) -ljson-c
 
 clean:
 	rm $(DB_EXEC) $(SERVER_EXEC) $(OBJ_DB) $(OBJ_SERVER)

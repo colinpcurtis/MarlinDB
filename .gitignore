@@ -1,3 +1,5 @@
 *.o
 marlin-cli
 server
+json-c/
+json-c-build/
