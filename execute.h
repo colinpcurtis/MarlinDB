@@ -14,5 +14,5 @@ char* handle_delete(HashTable* hash_table, char* key);
 
 void handle_exit(HashTable* hash_table);
 
-char* execute(HashTable* hash_table, Data* data);
+Data execute(HashTable* hash_table, Data* data);
 
