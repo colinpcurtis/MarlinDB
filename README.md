@@ -30,9 +30,9 @@ The following operations are supported in MarlinDB.
 All data is passed in JSON form with the following schema
 ```json
 {
-    "operation": <operation>,
-    "key": <key>,
-    "value": <value>
+    "operation": "<operation>",
+    "key": "<key>",
+    "value": "<value>",
 }
 ```
 
