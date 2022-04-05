@@ -7,15 +7,18 @@ It has two main components.
 2. A simple CLI that allows us to interact with the server.
 
 ## Building
-MarlinDB depends on the `json-c` library.  Its installation instructions can be found on [this GitHub repo](https://github.com/json-c/json-c)
+MarlinDB depends on the `json-c` library.  Its installation instructions can be found on [this GitHub repo](https://github.com/json-c/json-c).  The script `install.sh` installs the json-c library.
 To build MarlinDB, run the following commands
 
 ```bash
 git clone https://github.com/colinpcurtis/MarlinDB.git
 cd MarlinDB
-make        # builds the CLI
-make server # builds the server
+make install    # install json-c
+make            # builds the CLI
+make server     # builds the server
 ```
+
+The `make clean` command removes all executables and object files, and the `make fresh` command simiarly removes all executables and object files and also removes the `json-c` and `json-c-build` directories.
 
 ## Usage
 To start the server, run `./server`.  It by default runs on address `127.0.0.1` and port `7000`.
@@ -86,7 +89,6 @@ This also means it's incredibly simple to make requests to  MarlinDB from other 
 
 ## In progress
 The following functionality is going to be implemented in MarlinDB soon
-- make script to install json-c
 - multithreaded server for higher throughput when making requests to server
 - improve hash function
 - make benchmark tool
