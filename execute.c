@@ -17,7 +17,6 @@ char* handle_set(HashTable* hash_table, char* key, char* value) {
     }
 
     NodeData* to_insert = malloc(sizeof(NodeData));
-    printf("created element at %p\n", to_insert);
     strcpy(to_insert->key, key);
     strcpy(to_insert->value, value);
 
@@ -81,24 +80,44 @@ char* handle_delete(HashTable* hash_table, char* key) {
 //     exit(0);
 // }
 
-char* execute(HashTable* hash_table, Data* data) {
-    char* operation = NULL;
+Data execute(HashTable* hash_table, Data* data) {
+    char* updated = NULL;
     // if (strcmp(data->operation, "exit") == 0) {
     //     handle_exit(hash_table);
     // }
     if (strcmp(data->operation, "SET") == 0) {
-        operation = handle_set(hash_table, data->key, data->value);
+        updated = handle_set(hash_table, data->key, data->value);
     }
     else if (strcmp(data->operation, "GET") == 0) {
-        operation = handle_get(hash_table, data->key);
+        updated = handle_get(hash_table, data->key);
     }
     else if (strcmp(data->operation, "UPDATE") == 0) {
-        operation = handle_update(hash_table, data->key, data->value);
+        updated = handle_update(hash_table, data->key, data->value);
     }
     else if (strcmp(data->operation, "DELETE") == 0) {
-        operation = handle_delete(hash_table, data->key);
+        updated = handle_delete(hash_table, data->key);
     }
-    char* buf = malloc(sizeof(char) * MAX_LENGTH);
-    snprintf(buf, sizeof(char) * MAX_LENGTH, "%s %s %s", data->operation, data->key, operation);
-    return buf;
+
+    // printf("updated %s\n", updated);
+
+    Data return_data;
+    strcpy(return_data.operation, data->operation);
+    strcpy(return_data.key, data->key);
+
+    if (updated == NULL) {
+        strcpy(return_data.value, "");
+    }
+    else {
+        strcpy(return_data.value, updated);
+    }
+
+    // printf("%s\n", return_data.operation);
+    // printf("%s\n", return_data.key);
+    // printf("%s\n", return_data.value);
+
+    return return_data;
+
+    // char* buf = malloc(sizeof(char) * MAX_LENGTH);
+    // snprintf(buf, sizeof(char) * MAX_LENGTH, "%s %s %s", data->operation, data->key, updated);
+    // return buf;
 }

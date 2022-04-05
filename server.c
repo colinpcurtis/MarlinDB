@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <arpa/inet.h>
 #include <sys/socket.h>
+#include <json-c/json.h>
 
 #include "hash_table.h"
 #include "globals.h"
@@ -12,10 +13,23 @@
 #include "server.h"
 
 char* handle_message(HashTable* hash_table, char* client_message) {
-    Data data = split_input(client_message);
-    char* returned = execute(hash_table, &data);
-    printf("%s\n", returned);
-    return returned;
+    Data input_data = split_input(client_message);
+    Data return_data = execute(hash_table, &input_data);
+
+
+    struct json_object* json_obj = json_object_new_object();
+    if (strcmp(return_data.value, "") == 0) {
+        json_object_object_add(json_obj, "status", json_object_new_string("NOT_FOUND"));       
+    }
+    else {
+        json_object_object_add(json_obj, "status", json_object_new_string("OK"));
+    }
+    json_object_object_add(json_obj, "data", json_object_new_string(return_data.value));
+    printf("%s\n", json_object_to_json_string(json_obj));
+
+
+    // printf("%s\n", returned);
+    return json_object_to_json_string(json_obj);
 }
 
 // char* json_response(char* raw_response) {
@@ -65,6 +79,9 @@ int main() {
     HashTable* hash_table = hash_table_init();
 
     while (1) {
+        // Clean buffers:
+        memset(server_message, '\0', sizeof(server_message));
+        memset(client_message, '\0', sizeof(client_message));
         // Accept an incoming connection:
         client_size = sizeof(client_addr);
         client_sock = accept(socket_desc, (struct sockaddr*)&client_addr, &client_size);
@@ -73,7 +90,7 @@ int main() {
             printf("Can't accept\n");
             return -1;
         }
-        printf("Client connected at IP: %s and port: %i\n", inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port));
+        // printf("Client connected at IP: %s and port: %i\n", inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port));
 
         // Receive client's message:
         if (recv(client_sock, client_message, sizeof(client_message), 0) < 0){
