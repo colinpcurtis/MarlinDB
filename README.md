@@ -40,26 +40,33 @@ where `"operation"` is one of the following.
 
 Also, if `"value"` is not needed for an operation, then we can either not pass it at all in the JSON or leave it as the empty string.
 
+
+The data returned from the server to the client is also the following JSON form
+```json
+{
+    "status": "<status>",
+    "value": "<value>"
+}
+```
+where "<status>" is either "OK" (request processed successfully) or "NOT_FOUND" (the key was not found in the database).
+
+Similarly, the returned "<value>" is value that corresponds to the lookup key in the database, through a SET, GET, UPDATE, or DELETE request to the server.  There are no guarantees about the value of "value" when status is "NOT_FOUND".
+
 <b>SET</b>
 
 Creates a key-value pair in the database.
-Returns a string of the form `SET <key> <value>`
 
 <b>GET</b>
 
 Retrieves a value from the database by key.
-Returns a string of the form `GET <key> <value>`
 
 <b>UPDATE</b>
 
 Updates the value for a particular key in the database.
-Returns a string of the form `UPDATE <key> <value>`
 
 <b>DELETE</b>
 
 Deletes a key-value pair from the database.
-Returns the deleted pair in the form `DELETE <key> <value>`
-
 
 ## Design
 The key-value pairs in MarlinDB are stored as structs in a hash table with no chaining.  The size of the hash table is constant, and set at a large prime number.  These were chosen to prioritize a simple implementation with minimal technical overhead. Additionally, the index is chosen for the hash table based on the hash of the key.
@@ -79,7 +86,7 @@ This also means it's incredibly simple to make requests to  MarlinDB from other 
 
 ## In progress
 The following functionality is going to be implemented in MarlinDB soon
-- return json from server
 - make script to install json-c
 - multithreaded server for higher throughput when making requests to server
 - improve hash function
+- make benchmark tool
