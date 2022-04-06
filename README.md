@@ -13,15 +13,15 @@ To build MarlinDB, run the following commands
 ```bash
 git clone https://github.com/colinpcurtis/MarlinDB.git
 cd MarlinDB
-make install    # install json-c
-make            # builds the CLI
-make server     # builds the server
+make install            # install json-c
+make                    # builds the CLI
+make marlin-server      # builds the server
 ```
 
 The `make clean` command removes all executables and object files, and the `make fresh` command simiarly removes all executables and object files and also removes the `json-c` and `json-c-build` directories.
 
 ## Usage
-To start the server, run `./server`.  It by default runs on address `127.0.0.1` and port `7000`.
+To start the server, run `./marlin-server`.  It by default runs on address `127.0.0.1` and port `7000`.
 
 To access the CLI, run `./marlin-cli <server-address> <port>`.
 
@@ -70,6 +70,15 @@ Updates the value for a particular key in the database.
 <b>DELETE</b>
 
 Deletes a key-value pair from the database.
+
+## Testing
+There are many tests for the SET, GET, UPDATE, and DELETE operation on the database.  The server can be tested by invoking the 
+`pytest` command and the testing suite is located in the `test/test_server.py` file.
+
+The marlin-server must be running before pytest is invoked.
+
+The testing suite also serves as a good benchmark of the number of requests that the server is able to handle at a time,
+since if there are too many tests set, then multiple tests will fail with connection refused.
 
 ## Design
 The key-value pairs in MarlinDB are stored as structs in a hash table with no chaining.  The size of the hash table is constant, and set at a large prime number.  These were chosen to prioritize a simple implementation with minimal technical overhead. Additionally, the index is chosen for the hash table based on the hash of the key.
