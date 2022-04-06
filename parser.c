@@ -19,10 +19,6 @@ Data split_input(char* line) {
 	json_object_object_get_ex(parsed_json, "key", &key);
 	json_object_object_get_ex(parsed_json, "value", &value);
 
-    // printf("Operation: %s\n", json_object_get_string(operation));
-	// printf("Key: %s\n", json_object_get_string(key));
-	// printf("Value: %s\n", json_object_get_string(value));
-
     Data data;
 
     strcpy(data.operation, json_object_get_string(operation));

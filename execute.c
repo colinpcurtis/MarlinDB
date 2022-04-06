@@ -7,6 +7,7 @@
 
 /* implement CRUD operations */
 char* handle_set(HashTable* hash_table, char* key, char* value) {
+    // TODO: return error if key exists
     int idx = hash(key) % HASH_TABLE_LENGTH;
     const int start_idx = idx;
     while (hash_table->elements[idx] != NULL) {
@@ -74,17 +75,8 @@ char* handle_delete(HashTable* hash_table, char* key) {
     return NULL;
 }
 
-// void handle_exit(HashTable* hash_table) {
-//     hash_table_destroy(hash_table);
-//     printf("exited gracefully\n");
-//     exit(0);
-// }
-
 Data execute(HashTable* hash_table, Data* data) {
     char* updated = NULL;
-    // if (strcmp(data->operation, "exit") == 0) {
-    //     handle_exit(hash_table);
-    // }
     if (strcmp(data->operation, "SET") == 0) {
         updated = handle_set(hash_table, data->key, data->value);
     }
@@ -98,8 +90,6 @@ Data execute(HashTable* hash_table, Data* data) {
         updated = handle_delete(hash_table, data->key);
     }
 
-    // printf("updated %s\n", updated);
-
     Data return_data;
     strcpy(return_data.operation, data->operation);
     strcpy(return_data.key, data->key);
@@ -111,13 +101,5 @@ Data execute(HashTable* hash_table, Data* data) {
         strcpy(return_data.value, updated);
     }
 
-    // printf("%s\n", return_data.operation);
-    // printf("%s\n", return_data.key);
-    // printf("%s\n", return_data.value);
-
     return return_data;
-
-    // char* buf = malloc(sizeof(char) * MAX_LENGTH);
-    // snprintf(buf, sizeof(char) * MAX_LENGTH, "%s %s %s", data->operation, data->key, updated);
-    // return buf;
 }

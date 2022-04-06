@@ -6,9 +6,7 @@
 #include <sys/socket.h>
 #include <json-c/json.h>
 
-// #include "hash_table.h"
 #include "globals.h"
-// #include "execute.h"
 
 int main(int argc, char** argv) {
     system("clear");

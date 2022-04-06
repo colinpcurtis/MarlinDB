@@ -10,12 +10,11 @@
 #include "globals.h"
 #include "execute.h"
 #include "parser.h"
-#include "server.h"
+#include "marlin-server.h"
 
-char* handle_message(HashTable* hash_table, char* client_message) {
+const char* handle_message(HashTable* hash_table, char* client_message) {
     Data input_data = split_input(client_message);
     Data return_data = execute(hash_table, &input_data);
-
 
     struct json_object* json_obj = json_object_new_object();
     if (strcmp(return_data.value, "") == 0) {
@@ -27,16 +26,8 @@ char* handle_message(HashTable* hash_table, char* client_message) {
     json_object_object_add(json_obj, "data", json_object_new_string(return_data.value));
     printf("%s\n", json_object_to_json_string(json_obj));
 
-
-    // printf("%s\n", returned);
     return json_object_to_json_string(json_obj);
 }
-
-// char* json_response(char* raw_response) {
-//     struct json_object* json_obj = json_object_new_object();
-//     json_object_object_add(json_obj, "status", json_object_new_string("OK"));
-//     json_object_object_add(json_obj, "data", json_object_new_string("hi"));
-// }
 
 int main() {
     int socket_desc, client_sock;
@@ -90,7 +81,6 @@ int main() {
             printf("Can't accept\n");
             return -1;
         }
-        // printf("Client connected at IP: %s and port: %i\n", inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port));
 
         // Receive client's message:
         if (recv(client_sock, client_message, sizeof(client_message), 0) < 0){
@@ -99,7 +89,7 @@ int main() {
         }
         printf("Msg from client: %s\n", client_message);
 
-        char* response = handle_message(hash_table, client_message);
+        const char* response = handle_message(hash_table, client_message);
 
         // Respond to client:
         strcpy(server_message, response);
