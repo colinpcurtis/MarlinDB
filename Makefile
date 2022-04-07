@@ -14,7 +14,7 @@ $(DB_EXEC): $(OBJ_DB)
 	$(CC) $(CFLAGS) -o $@ $(OBJ_DB) -ljson-c
 
 $(SERVER_EXEC): $(OBJ_SERVER)
-	$(CC) $(CFLAGS) -o $@ $(OBJ_SERVER) -ljson-c
+	$(CC) $(CFLAGS) -o $@ $(OBJ_SERVER) -ljson-c -pthread
 
 install:
 	./install.sh
