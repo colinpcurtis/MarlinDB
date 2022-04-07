@@ -100,4 +100,3 @@ This also means it's incredibly simple to make requests to  MarlinDB from other 
 The following functionality is going to be implemented in MarlinDB soon
 - multithreaded server for higher throughput when making requests to server
 - improve hash function
-- make benchmark tool

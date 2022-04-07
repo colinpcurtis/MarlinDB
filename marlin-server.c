@@ -29,18 +29,38 @@ const char* handle_message(HashTable* hash_table, char* client_message) {
     return json_object_to_json_string(json_obj);
 }
 
-int main() {
-    int socket_desc, client_sock;
-    socklen_t client_size;
-    struct sockaddr_in server_addr, client_addr;
-    char server_message[2000], client_message[2000];
-
-    // Clean buffers:
+void pool_worker(PoolData* data) {
+    char server_message[2000];
     memset(server_message, '\0', sizeof(server_message));
-    memset(client_message, '\0', sizeof(client_message));
 
+    const char* response = handle_message(data->hash_table, data->client_message);
+    // Respond to client:
+    strcpy(server_message, response);
+    
+    if (send(data->client_sock, server_message, strlen(server_message), 0) < 0){
+        printf("Can't send\n");
+    }
+    close(data->client_sock);
+}
+
+int accept_client_connection(int server_sock) {
+    struct sockaddr_in client_addr;
+    socklen_t client_size;
+
+    client_size = sizeof(client_addr);
+    int client_sock = accept(server_sock, (struct sockaddr*)&client_addr, &client_size);
+
+    if (client_sock < 0){
+        printf("Can't accept\n");
+        return -1;
+    }
+    return client_sock;
+}
+
+int init_server() {
     // Create socket:
-    socket_desc = socket(AF_INET, SOCK_STREAM, 0);
+    int socket_desc = socket(AF_INET, SOCK_STREAM, 0);
+    struct sockaddr_in server_addr;
 
     if(socket_desc < 0){
         printf("Error while creating socket\n");
@@ -66,43 +86,37 @@ int main() {
         return -1;
     }
     printf("Listening for incoming connections.....\n");
+    return socket_desc;
+}
+
+int main() {
+    char client_message[2000];
+    int server_sock = init_server();
     
     HashTable* hash_table = hash_table_init();
 
     while (1) {
         // Clean buffers:
-        memset(server_message, '\0', sizeof(server_message));
         memset(client_message, '\0', sizeof(client_message));
-        // Accept an incoming connection:
-        client_size = sizeof(client_addr);
-        client_sock = accept(socket_desc, (struct sockaddr*)&client_addr, &client_size);
-        
-        if (client_sock < 0){
-            printf("Can't accept\n");
-            return -1;
-        }
+        int client_sock = accept_client_connection(server_sock);
 
         // Receive client's message:
         if (recv(client_sock, client_message, sizeof(client_message), 0) < 0){
             printf("Couldn't receive\n");
             return -1;
         }
+
         printf("Msg from client: %s\n", client_message);
+        PoolData data;
+        data.hash_table = hash_table;
+        data.client_message = client_message;
+        data.client_sock = client_sock;
 
-        const char* response = handle_message(hash_table, client_message);
-
-        // Respond to client:
-        strcpy(server_message, response);
-        
-        if (send(client_sock, server_message, strlen(server_message), 0) < 0){
-            printf("Can't send\n");
-            return -1;
-        }
+        pool_worker(&data);
     }
 
     // Closing the socket:
-    close(client_sock);
-    close(socket_desc);
+    close(server_sock);
     hash_table_destroy(hash_table);
 
     return 0;
